@@ -84,7 +84,7 @@ gltfLoader.load("allthislogo_x50.glb",(gltf) => {
 
   animate('section.content p, section.content img', {opacity:0} )
   inView('section.content',(info) => {
-    animate(info.target.querySelectorAll('p,img'), {opacity: 1}, {duration:1, delay:1} )
+    animate(info.target.querySelectorAll('p,img'), {opacity: 1}, {duration:1.5, delay:0.25} )
   })
 
   animate('div.loader', {y:"-100%"},  {duration:1, delay:1} )
