@@ -9,7 +9,10 @@ const NoiseShader = {
 	uniforms: {
 
 		'tDiffuse': { value: null },
-		'opacity': { value: 1.0 }
+		'opacity': { value: 1.0 },
+		'time': { value: 0.0 },
+		'effect': { value: 0.0 },
+		'aspectRatio': { value: 1 }
 
 	},
 
@@ -30,9 +33,15 @@ const NoiseShader = {
 
 		uniform sampler2D tDiffuse;
 
+		uniform float time;
+
+		uniform float effect;
+
+		uniform float aspectRatio;
+
 		varying vec2 vUv;
 
-    #define NUM_OCTAVES 5
+		#define NUM_OCTAVES 5
 
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
@@ -77,12 +86,23 @@ float fbm(vec3 x) {
 
 		void main() {
 
-      vec2 distortion = vec2(
-        fbm(vec3(vUv.x, vUv.y, 0.0)),
-        0.0
-      );
+			float dSize = 0.1;
+			float dAmount = 12.0;
 
-			vec4 texel = texture2D( tDiffuse, vUv );
+			vec2 distortion = effect * vec2(
+				mix(
+					-1.0 * dSize,
+					dSize, 
+					fbm(vec3(vUv.x, vUv.y, 0.0 + time * 0.01) * dAmount)
+					),
+					mix(
+						-1.0 * dSize * aspectRatio,
+						dSize * aspectRatio, 
+						fbm(vec3(vUv.x, vUv.y, 1.0 + time * 0.01) * dAmount)
+						)
+			);
+
+			vec4 texel = texture2D( tDiffuse, vUv + distortion );
 			gl_FragColor = opacity * texel;
 
 
